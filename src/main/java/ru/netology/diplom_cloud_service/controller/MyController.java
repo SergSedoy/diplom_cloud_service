@@ -13,7 +13,8 @@ import ru.netology.diplom_cloud_service.service.CloudServiceImpl;
 import java.util.List;
 import java.util.Properties;
 
-@RestController("/cloud")
+@RestController
+@RequestMapping("/cloud")
 @CrossOrigin(origins = "http://localhost:8080", allowCredentials = "true")
 public class MyController {
 
@@ -23,12 +24,12 @@ public class MyController {
         this.cloudServiceImpl = cloudServiceImpl;
     }
 
-    @RequestMapping
+    @GetMapping("/")
     public ResponseEntity<String> greeting() {
         return ResponseEntity.status(HttpStatus.OK).body("Hello!");
     }
 
-    @PostMapping("login")
+    @PostMapping("/login")
     public String loging(@RequestBody User user) {
         Properties properties = new Properties();
 
@@ -38,38 +39,38 @@ public class MyController {
         return properties.getProperty("qwert");
     }
 
-    @PostMapping("logout")
+    @PostMapping("/logout")
     public HttpStatus logout() {
         //TODO удалить токен
         return HttpStatus.OK;
     }
 
-    @PostMapping("file")
+    @PostMapping("/file")
     public HttpStatus uploadFile(MultipartFile file) {
         // TODO сохранить файл
 //        cloudService.uploadFile(fileName);
         return HttpStatus.OK;
     }
 
-    @DeleteMapping("file")
+    @DeleteMapping("/file")
     public HttpStatus delFile(@RequestParam("name") String fileName) {
         // TODO удалить файл
         return HttpStatus.OK;
     }
 
-    @GetMapping("file")
+    @GetMapping("/file")
     public String getFile(@RequestParam("in") String in, @RequestParam("name") String fileName) {
         // TODO вернуть файл
         return "get request GET!";
     }
 
-    @PutMapping("file")
+    @PutMapping("/file")
     public HttpStatus editFile(@RequestParam("name") String fileName) {
         // TODO перезаписать файл
         return HttpStatus.OK;
     }
 
-    @GetMapping("list")
+    @GetMapping("/list")
     public ResponseEntity<List<String>> getListFile(Integer limit) {
 //        cloudService.getListFile(limit);
         // TODO вернуть список файлов
