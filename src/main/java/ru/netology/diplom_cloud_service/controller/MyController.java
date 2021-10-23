@@ -7,21 +7,24 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.netology.diplom_cloud_service.exception.ServerException;
 import ru.netology.diplom_cloud_service.exception.InputException;
 import ru.netology.diplom_cloud_service.exception.UnauthorizedException;
+import ru.netology.diplom_cloud_service.pojo.Token;
 import ru.netology.diplom_cloud_service.pojo.User;
+import ru.netology.diplom_cloud_service.repository.CloudRepositoryImp;
 import ru.netology.diplom_cloud_service.service.CloudServiceImpl;
 
 import java.util.List;
-import java.util.Properties;
 
 @RestController
-@RequestMapping("/cloud")
+//@RequestMapping("/cloud")
 @CrossOrigin(origins = "http://localhost:8080", allowCredentials = "true")
 public class MyController {
 
     private final CloudServiceImpl cloudServiceImpl;
+    private final CloudRepositoryImp repository;
 
-    public MyController(CloudServiceImpl cloudServiceImpl) {
+    public MyController(CloudServiceImpl cloudServiceImpl, CloudRepositoryImp repository) {
         this.cloudServiceImpl = cloudServiceImpl;
+        this.repository = repository;
     }
 
     @GetMapping("/")
@@ -31,12 +34,14 @@ public class MyController {
 
     @PostMapping("/login")
     public String loging(@RequestBody User user) {
-        Properties properties = new Properties();
+//        Properties properties = new Properties();
 
-        System.out.println(properties.getProperty("email", "wid@mail.ru"));
+//        System.out.println(properties.getProperty("email", "wid@mail.ru"));
 //        return ResponseEntity.status(200).header("auth-token", "pass" + (int)(Math.random() * 1000)).build();
-        properties.setProperty("qwert", "456");
-        return properties.getProperty("qwert");
+//        return properties.getProperty("qwert");
+        //todo проверка user в базе
+        user.setToken(new Token().getAuthToken());
+        return user.getToken();
     }
 
     @PostMapping("/logout")
@@ -46,9 +51,12 @@ public class MyController {
     }
 
     @PostMapping("/file")
-    public HttpStatus uploadFile(MultipartFile file) {
+    public HttpStatus uploadFile(@RequestHeader ("auth-token") String auth_token, MultipartFile file) {
+        String token = repository.getToken(auth_token);
+        if (token.isEmpty())
+            throw new UnauthorizedException("Unauthorized error");
         // TODO сохранить файл
-//        cloudService.uploadFile(fileName);
+//        cloudService.uploadFile();
         return HttpStatus.OK;
     }
 

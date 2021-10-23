@@ -5,6 +5,7 @@ import java.util.Objects;
 public class User {
     private String login;
     private String password;
+    private String token;
 
     public User(String login, String password) {
         this.login = login;
@@ -27,18 +28,27 @@ public class User {
         this.password = password;
     }
 
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
         return login.equals(user.login) &&
-                password.equals(user.password);
+                password.equals(user.password) &&
+                Objects.equals(token, user.token);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(login, password);
+        return Objects.hash(login, password, token);
     }
 
     @Override

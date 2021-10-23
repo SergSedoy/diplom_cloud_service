@@ -8,11 +8,13 @@ CREATE TABLE IF NOT EXISTS datefiles
     key_dec     varchar(255)
 );
 
-# CREATE TABLE IF NOT EXISTS orders
-# (
-#     id           int primary key auto_increment,
-#     date         varchar(255),
-#     customer_id  int NOT NULL,
-#     product_name varchar(255),
-#     amount       int
-# );
+CREATE TABLE IF NOT EXISTS users
+(
+    id       int primary key auto_increment,
+    login    varchar(255) not null,
+    password varchar(255) not null,
+    token    varchar(255)
+);
+
+insert into users (id, login, password, token) VALUES (1, 'qid@mail.ru', '123', null);
+insert into users (id, login, password, token) VALUES (1, 'wid@mail.ru', '123', null);

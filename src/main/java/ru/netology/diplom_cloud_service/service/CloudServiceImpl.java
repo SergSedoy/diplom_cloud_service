@@ -3,6 +3,8 @@ package ru.netology.diplom_cloud_service.service;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.netology.diplom_cloud_service.exception.InputException;
+import ru.netology.diplom_cloud_service.exception.UnauthorizedException;
+import ru.netology.diplom_cloud_service.pojo.File;
 import ru.netology.diplom_cloud_service.repository.CloudRepositoryImp;
 
 import java.util.List;
@@ -22,8 +24,28 @@ public class CloudServiceImpl implements CloudService {
     }
 
     @Override
-    public void uploadFile(MultipartFile file) {
-        String filename = file.getOriginalFilename();
+    public void uploadFile(String auth_token, MultipartFile file) {
+        System.out.println(file.getOriginalFilename());
+
+        if (file.isEmpty())
+            throw new InputException("Error input data");
         repository.uploadFile(file);
     }
+
+    @Override
+    public void delFile(String fileName) {
+
+    }
+
+    @Override
+    public File getFile(String fileName) {
+        return null;
+    }
+
+    @Override
+    public void editFile(String fileName) {
+
+    }
+
+
 }
