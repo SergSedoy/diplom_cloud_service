@@ -1,11 +1,20 @@
 package ru.netology.diplom_cloud_service.pojo;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.util.Objects;
 
+@Entity
 public class User {
+    @Id
+    private long id;
     private String login;
     private String password;
-    private String token;
+
+    public User(){
+        this.login = login;
+        this.password = password;
+    }
 
     public User(String login, String password) {
         this.login = login;
@@ -28,27 +37,18 @@ public class User {
         this.password = password;
     }
 
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return login.equals(user.login) &&
-                password.equals(user.password) &&
-                Objects.equals(token, user.token);
+        return Objects.equals(login, user.login) &&
+                Objects.equals(password, user.password);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(login, password, token);
+        return Objects.hash(login, password);
     }
 
     @Override

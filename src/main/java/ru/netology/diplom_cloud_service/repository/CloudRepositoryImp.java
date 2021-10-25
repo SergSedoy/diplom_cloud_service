@@ -8,6 +8,7 @@ import ru.netology.diplom_cloud_service.pojo.User;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.sql.Statement;
 import java.util.List;
 
 @Repository
@@ -42,9 +43,11 @@ public class CloudRepositoryImp implements CloudRepository {
 
     }
 
-    public String getToken(String auth_token) {
-//        String sql = "select token from users where password = 123";
-//        System.out.println(entityManager.createQuery(sql));
-        return null;
+    public List<User> loging(User user) {
+
+        return entityManager.createQuery("select s from User s where s.password = :password AND s.login = :login", User.class)
+                .setParameter("password", user.getPassword())
+                .setParameter("login", user.getLogin())
+                .getResultList();
     }
 }

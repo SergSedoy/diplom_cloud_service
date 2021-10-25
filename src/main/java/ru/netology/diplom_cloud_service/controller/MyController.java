@@ -7,9 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.netology.diplom_cloud_service.exception.ServerException;
 import ru.netology.diplom_cloud_service.exception.InputException;
 import ru.netology.diplom_cloud_service.exception.UnauthorizedException;
-import ru.netology.diplom_cloud_service.pojo.Token;
 import ru.netology.diplom_cloud_service.pojo.User;
-import ru.netology.diplom_cloud_service.repository.CloudRepositoryImp;
 import ru.netology.diplom_cloud_service.service.CloudServiceImpl;
 
 import java.util.List;
@@ -20,11 +18,9 @@ import java.util.List;
 public class MyController {
 
     private final CloudServiceImpl cloudServiceImpl;
-    private final CloudRepositoryImp repository;
 
-    public MyController(CloudServiceImpl cloudServiceImpl, CloudRepositoryImp repository) {
+    public MyController(CloudServiceImpl cloudServiceImpl) {
         this.cloudServiceImpl = cloudServiceImpl;
-        this.repository = repository;
     }
 
     @GetMapping("/")
@@ -35,13 +31,11 @@ public class MyController {
     @PostMapping("/login")
     public String loging(@RequestBody User user) {
 //        Properties properties = new Properties();
-
 //        System.out.println(properties.getProperty("email", "wid@mail.ru"));
 //        return ResponseEntity.status(200).header("auth-token", "pass" + (int)(Math.random() * 1000)).build();
 //        return properties.getProperty("qwert");
-        //todo проверка user в базе
-        user.setToken(new Token().getAuthToken());
-        return user.getToken();
+
+        return cloudServiceImpl.loging(user);
     }
 
     @PostMapping("/logout")
@@ -52,11 +46,13 @@ public class MyController {
 
     @PostMapping("/file")
     public HttpStatus uploadFile(@RequestHeader ("auth-token") String auth_token, MultipartFile file) {
-        String token = repository.getToken(auth_token);
-        if (token.isEmpty())
-            throw new UnauthorizedException("Unauthorized error");
+
         // TODO сохранить файл
-//        cloudService.uploadFile();
+//        if(cloudService.checkToken(auth_token)){
+//    cloudService.uploadFile(file);
+//    } else {
+//    throw new UnauthorizedException("Unauthorized error");
+//    }
         return HttpStatus.OK;
     }
 

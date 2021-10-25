@@ -5,6 +5,8 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.netology.diplom_cloud_service.exception.InputException;
 import ru.netology.diplom_cloud_service.exception.UnauthorizedException;
 import ru.netology.diplom_cloud_service.pojo.File;
+import ru.netology.diplom_cloud_service.pojo.Token;
+import ru.netology.diplom_cloud_service.pojo.User;
 import ru.netology.diplom_cloud_service.repository.CloudRepositoryImp;
 
 import java.util.List;
@@ -12,6 +14,8 @@ import java.util.List;
 @Service
 public class CloudServiceImpl implements CloudService {
     private final CloudRepositoryImp repository;
+    private String token;
+
 
     public CloudServiceImpl(CloudRepositoryImp repository) {
         this.repository = repository;
@@ -23,9 +27,20 @@ public class CloudServiceImpl implements CloudService {
         return repository.getListFile(limit);
     }
 
+    public String loging(User user) {
+        List<User> list = repository.loging(user);
+        for(User u : list) System.out.println(u);
+        if(list.isEmpty())
+            throw new UnauthorizedException("Bad credentials");
+        token = new Token().getAuthToken();
+        return token;
+    }
+
     @Override
     public void uploadFile(String auth_token, MultipartFile file) {
         System.out.println(file.getOriginalFilename());
+        if (auth_token.isEmpty() || !auth_token.equals(token))
+            throw new UnauthorizedException("Unauthorized error");
 
         if (file.isEmpty())
             throw new InputException("Error input data");
