@@ -29,18 +29,22 @@ public class CloudServiceImpl implements CloudService {
 
     public String loging(User user) {
         List<User> list = repository.loging(user);
-        for(User u : list) System.out.println(u);
-        if(list.isEmpty())
+        for (User u : list) System.out.println(u);
+        if (list.isEmpty())
             throw new UnauthorizedException("Bad credentials");
         token = new Token().getAuthToken();
         return token;
     }
 
-    @Override
-    public void uploadFile(String auth_token, MultipartFile file) {
-        System.out.println(file.getOriginalFilename());
-        if (auth_token.isEmpty() || !auth_token.equals(token))
+    public void checkToken(String authToken) {
+        if (authToken.isEmpty() || !authToken.equals(token))
             throw new UnauthorizedException("Unauthorized error");
+        System.out.println("token проверен!");
+    }
+
+    @Override
+    public void uploadFile(MultipartFile file) {
+        System.out.println(file.getOriginalFilename());
 
         if (file.isEmpty())
             throw new InputException("Error input data");

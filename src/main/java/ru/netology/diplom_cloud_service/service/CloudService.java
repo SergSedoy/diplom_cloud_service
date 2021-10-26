@@ -5,7 +5,7 @@ import ru.netology.diplom_cloud_service.pojo.File;
 
 public interface CloudService {
 
-    void uploadFile(String auth_token, MultipartFile file);
+    void uploadFile(MultipartFile file);
 
     void delFile(String fileName);
 

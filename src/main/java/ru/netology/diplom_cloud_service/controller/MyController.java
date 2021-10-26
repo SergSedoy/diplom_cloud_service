@@ -45,15 +45,12 @@ public class MyController {
     }
 
     @PostMapping("/file")
-    public HttpStatus uploadFile(@RequestHeader ("auth-token") String auth_token, MultipartFile file) {
+    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file, @RequestHeader("auth-token") String authToken) {
 
         // TODO сохранить файл
-//        if(cloudService.checkToken(auth_token)){
-//    cloudService.uploadFile(file);
-//    } else {
-//    throw new UnauthorizedException("Unauthorized error");
-//    }
-        return HttpStatus.OK;
+        cloudServiceImpl.checkToken(authToken);
+        cloudServiceImpl.uploadFile(file);
+        return new ResponseEntity<String>("Success upload" , HttpStatus.OK);
     }
 
     @DeleteMapping("/file")
@@ -93,8 +90,8 @@ public class MyController {
 
     @ExceptionHandler(ServerException.class)
     public ResponseEntity<String> serverException(ServerException e) {
-        return new ResponseEntity<String>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<String>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    
+
 
 }

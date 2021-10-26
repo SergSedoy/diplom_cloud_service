@@ -4,8 +4,7 @@ CREATE TABLE IF NOT EXISTS datefiles
     name        varchar(255),
     file_type   varchar(255),
     size        int check (size > 0),
-    upload_date varchar(255),
-    key_dec     varchar(255)
+    upload_date varchar(255)
 );
 
 CREATE TABLE IF NOT EXISTS user
