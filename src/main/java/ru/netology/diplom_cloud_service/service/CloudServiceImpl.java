@@ -4,11 +4,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.netology.diplom_cloud_service.exception.InputException;
 import ru.netology.diplom_cloud_service.exception.UnauthorizedException;
-import ru.netology.diplom_cloud_service.pojo.File;
+import ru.netology.diplom_cloud_service.pojo.Files;
 import ru.netology.diplom_cloud_service.pojo.Token;
 import ru.netology.diplom_cloud_service.pojo.User;
 import ru.netology.diplom_cloud_service.repository.CloudRepositoryImp;
 
+import java.io.File;
 import java.util.List;
 
 @Service
@@ -44,7 +45,10 @@ public class CloudServiceImpl implements CloudService {
 
     @Override
     public void uploadFile(MultipartFile file) {
+//        File convertFiles = new File("C:\\Users\\naste\\Desktop\\New\\" + file.getOriginalFilename());
         System.out.println(file.getOriginalFilename());
+        System.out.println(file.getSize());
+        System.out.println(file.getContentType());
 
         if (file.isEmpty())
             throw new InputException("Error input data");
@@ -57,7 +61,7 @@ public class CloudServiceImpl implements CloudService {
     }
 
     @Override
-    public File getFile(String fileName) {
+    public Files getFile(String fileName) {
         return null;
     }
 

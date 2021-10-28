@@ -1,7 +1,7 @@
 package ru.netology.diplom_cloud_service.service;
 
 import org.springframework.web.multipart.MultipartFile;
-import ru.netology.diplom_cloud_service.pojo.File;
+import ru.netology.diplom_cloud_service.pojo.Files;
 
 public interface CloudService {
 
@@ -9,7 +9,7 @@ public interface CloudService {
 
     void delFile(String fileName);
 
-    File getFile(String fileName);
+    Files getFile(String fileName);
 
     void editFile(String fileName);
 }

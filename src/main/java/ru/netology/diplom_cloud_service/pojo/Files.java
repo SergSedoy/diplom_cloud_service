@@ -3,13 +3,13 @@ package ru.netology.diplom_cloud_service.pojo;
 import java.text.SimpleDateFormat;
 import java.util.Objects;
 
-public class File {
+public class Files {
     private String fileName;
     private int size;
     private String fileType;
     private SimpleDateFormat date;
 
-    public File(String fileName, int size, String fileType, SimpleDateFormat date) {
+    public Files(String fileName, int size, String fileType, SimpleDateFormat date) {
         this.fileName = fileName;
         this.size = size;
         this.fileType = fileType;
@@ -52,11 +52,11 @@ public class File {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        File file = (File) o;
-        return size == file.size &&
-                fileName.equals(file.fileName) &&
-                fileType.equals(file.fileType) &&
-                date.equals(file.date);
+        Files files = (Files) o;
+        return size == files.size &&
+                Objects.equals(fileName, files.fileName) &&
+                Objects.equals(fileType, files.fileType) &&
+                Objects.equals(date, files.date);
     }
 
     @Override
@@ -66,7 +66,7 @@ public class File {
 
     @Override
     public String toString() {
-        return "File{" +
+        return "Files{" +
                 "fileName='" + fileName + '\'' +
                 ", size=" + size +
                 ", fileType='" + fileType + '\'' +

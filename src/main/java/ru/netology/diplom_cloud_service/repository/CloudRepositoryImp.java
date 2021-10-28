@@ -1,10 +1,9 @@
 package ru.netology.diplom_cloud_service.repository;
 
-import com.mysql.cj.MysqlConnection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
-import ru.netology.diplom_cloud_service.pojo.File;
+import ru.netology.diplom_cloud_service.pojo.Files;
 import ru.netology.diplom_cloud_service.pojo.User;
 
 import javax.persistence.EntityManager;
@@ -37,13 +36,15 @@ public class CloudRepositoryImp implements CloudRepository {
             String name = file.getOriginalFilename();
             String file_type = file.getContentType();
             long size = file.getSize();
-            SimpleDateFormat dateFormat = new SimpleDateFormat();
+//            SimpleDateFormat
             Date upload_date = new Date();
-            PreparedStatement statement = connection.prepareStatement("INSERT datefiles (name, file_type, size, upload_date) VALUES (?, ?, ?, ?, ?)");
+            System.out.println("file save succesful");
+            PreparedStatement statement = connection.prepareStatement("INSERT INTO datefiles (name, file_type, size, upload_date) VALUES (?, ?, ?, ?)");
             statement.setString(1, name);
             statement.setString(2, file_type);
             statement.setLong(3, size);
-            statement.setDate(4, (java.sql.Date) upload_date);
+            statement.setString(4, upload_date + "");
+            statement.execute();
 
         }catch (SQLException e) {
             e.getSQLState();
@@ -56,7 +57,7 @@ public class CloudRepositoryImp implements CloudRepository {
     }
 
     @Override
-    public File getFile(String fileName) {
+    public Files getFile(String fileName) {
         return null;
     }
 
