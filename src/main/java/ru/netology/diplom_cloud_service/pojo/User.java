@@ -10,15 +10,15 @@ public class User {
     private long id;
     private String login;
     private String password;
+    private String dtbase;
 
     public User(){
-        this.login = login;
-        this.password = password;
     }
 
-    public User(String login, String password) {
+    public User(String login, String password, String dtbase) {
         this.login = login;
         this.password = password;
+        this.dtbase = dtbase;
     }
 
     public String getLogin() {
@@ -35,6 +35,14 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getDtbase() {
+        return dtbase;
+    }
+
+    public void setDtbase(String dtbase) {
+        this.dtbase = dtbase;
     }
 
     @Override
@@ -54,8 +62,10 @@ public class User {
     @Override
     public String toString() {
         return "User{" +
-                "login='" + login + '\'' +
+                "id=" + id +
+                ", login='" + login + '\'' +
                 ", password='" + password + '\'' +
+                ", dtbase='" + dtbase + '\'' +
                 '}';
     }
 }

@@ -46,35 +46,35 @@ public class MyController {
 
     @PostMapping("/file")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file, @RequestHeader("auth-token") String authToken) {
-
-        // TODO сохранить файл
         cloudServiceImpl.checkToken(authToken);
         cloudServiceImpl.uploadFile(file);
-        return new ResponseEntity<String>("Success upload" , HttpStatus.OK);
+        return new ResponseEntity<>("Success upload" , HttpStatus.OK);
     }
 
     @DeleteMapping("/file")
-    public HttpStatus delFile(@RequestParam("name") String fileName) {
-        // TODO удалить файл
-        return HttpStatus.OK;
+    public ResponseEntity<String> delFile(@RequestParam("name") String fileName, @RequestHeader ("auth-token") String authToken) {
+        cloudServiceImpl.checkToken(authToken);
+        cloudServiceImpl.delFile(fileName);
+        return new ResponseEntity<>("Success deleted", HttpStatus.OK);
     }
 
     @GetMapping("/file")
-    public String getFile(@RequestParam("in") String in, @RequestParam("name") String fileName) {
+    public ResponseEntity<MultipartFile> getFile(@RequestParam("name") String fileName, @RequestHeader ("auth-token") String authToken) {
         // TODO вернуть файл
-        return "get request GET!";
+        cloudServiceImpl.checkToken(authToken);
+
+        return new ResponseEntity<MultipartFile>(cloudServiceImpl.getFile(fileName), HttpStatus.OK);
     }
 
     @PutMapping("/file")
-    public HttpStatus editFile(@RequestParam("name") String fileName) {
+    public HttpStatus editFile(@RequestParam("name") String fileName, @RequestHeader ("auth-token") String authToken) {
         // TODO перезаписать файл
         return HttpStatus.OK;
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<String>> getListFile(Integer limit) {
-//        cloudService.getListFile(limit);
-        // TODO вернуть список файлов
+    public ResponseEntity<List<String>> getListFile(@RequestParam("limit") Integer limit, @RequestHeader ("auth-token") String authToken) {
+        cloudServiceImpl.checkToken(authToken);
         return ResponseEntity.status(HttpStatus.OK).body(cloudServiceImpl.getListFile(limit));
     }
 

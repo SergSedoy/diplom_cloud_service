@@ -6,13 +6,13 @@ import ru.netology.diplom_cloud_service.pojo.Files;
 import java.util.List;
 
 public interface CloudRepository {
-    List<String> getListFile(Integer limit);
+    List<String> getListFile(Integer limit, String dtBase);
 
-    void uploadFile(MultipartFile file);
+    void uploadFile(MultipartFile file, String dtBase);
 
-    void delFile(String fileName);
+    void delFile(String fileName, String dtBase);
 
-    Files getFile(String fileName);
+    Files getFile(String fileName, String dtBase);
 
-    void editFile(String fileName);
+    void editFile(String fileName, String dtBase);
 }

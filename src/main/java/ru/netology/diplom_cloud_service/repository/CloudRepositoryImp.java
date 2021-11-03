@@ -3,15 +3,23 @@ package ru.netology.diplom_cloud_service.repository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
+import ru.netology.diplom_cloud_service.exception.InputException;
+import ru.netology.diplom_cloud_service.exception.ServerException;
 import ru.netology.diplom_cloud_service.pojo.Files;
+import ru.netology.diplom_cloud_service.pojo.Token;
 import ru.netology.diplom_cloud_service.pojo.User;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.sql.DataSource;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.sql.*;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 @Repository
@@ -24,45 +32,77 @@ public class CloudRepositoryImp implements CloudRepository {
     private EntityManager entityManager;
 
     @Override
-    public List<String> getListFile(Integer limit) {
-        List<String> list = List.of("file 1", "file 2", "file 3");
+    public List<String> getListFile(Integer limit, String dtBase) {
+        int count = 0;
+        List<String> list = new ArrayList<>();
+        try (Connection connection = dataSource.getConnection()) {
+            String sql = "SELECT * FROM " + dtBase;
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(sql);
+            while (resultSet.next()) {
+                System.out.println();
+                if (count < limit) {
+                    list.add(resultSet.getString("id") + ". " + resultSet.getString("name") + " " + resultSet.getString("upload_date") + " " + resultSet.getString("size"));
+                    count++;
+                } else break;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return list;
     }
 
     @Override
-    public void uploadFile(MultipartFile file) {
-        try(Connection connection = dataSource.getConnection()) {
-
-            String name = file.getOriginalFilename();
-            String file_type = file.getContentType();
+    public void uploadFile(MultipartFile file, String dtBase) {
+        try (Connection connection = dataSource.getConnection()) {
+            assert file.getOriginalFilename() != null;
+            String nameOrigin = file.getOriginalFilename();
+            String name = nameOrigin.substring(0, nameOrigin.length() - 4);
+            String file_type = nameOrigin.substring(nameOrigin.length() - 3);
             long size = file.getSize();
-//            SimpleDateFormat
-            Date upload_date = new Date();
+            String upload_date = new SimpleDateFormat("dd.M.y k-m").format(new GregorianCalendar().getTime());
+
+            File tmpFile = new File("C:\\Users\\naste\\Desktop\\Tmp\\" + upload_date + "_" + file.getOriginalFilename());
+            FileOutputStream out = new FileOutputStream(tmpFile);
+            out.write(file.getBytes());
+            out.close();
+            FileInputStream in = new FileInputStream(tmpFile);
             System.out.println("file save succesful");
-            PreparedStatement statement = connection.prepareStatement("INSERT INTO datefiles (name, file_type, size, upload_date) VALUES (?, ?, ?, ?)");
+            String sql = "INSERT INTO " + dtBase + " (name, file_type, size, upload_date, content) VALUES (?, ?, ?, ?, ?)";
+            PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1, name);
             statement.setString(2, file_type);
             statement.setLong(3, size);
-            statement.setString(4, upload_date + "");
+            statement.setString(4, upload_date);
+            statement.setBinaryStream(5, in);
             statement.execute();
+            in.close();
+            tmpFile.delete();
 
-        }catch (SQLException e) {
-            e.getSQLState();
+        } catch (SQLException | IOException e) {
+            e.printStackTrace();
         }
     }
 
     @Override
-    public void delFile(String fileName) {
-
+    public void delFile(String fileName, String dtBase) {
+        try (Connection connection = dataSource.getConnection()) {
+            Statement statement = connection.createStatement();
+            String sql = String.format("DELETE FROM %s WHERE name = '%s'", dtBase, fileName);
+            if (statement.execute(sql))
+                throw new ServerException("Error delet file");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
-    public Files getFile(String fileName) {
+    public Files getFile(String fileName, String dtBase) {
         return null;
     }
 
     @Override
-    public void editFile(String fileName) {
+    public void editFile(String fileName, String dtBase) {
 
     }
 

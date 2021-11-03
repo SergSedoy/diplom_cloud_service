@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.netology.diplom_cloud_service.exception.InputException;
 import ru.netology.diplom_cloud_service.exception.UnauthorizedException;
-import ru.netology.diplom_cloud_service.pojo.Files;
 import ru.netology.diplom_cloud_service.pojo.Token;
 import ru.netology.diplom_cloud_service.pojo.User;
 import ru.netology.diplom_cloud_service.repository.CloudRepositoryImp;
@@ -15,7 +14,7 @@ import java.util.List;
 @Service
 public class CloudServiceImpl implements CloudService {
     private final CloudRepositoryImp repository;
-    private String token;
+    private Token token;
 
 
     public CloudServiceImpl(CloudRepositoryImp repository) {
@@ -23,45 +22,45 @@ public class CloudServiceImpl implements CloudService {
     }
 
     public List<String> getListFile(Integer limit) {
+
         if (limit <= 0 || limit > 100)
             throw new InputException("Error input data!");
-        return repository.getListFile(limit);
+        return repository.getListFile(limit, token.getUser().getDtbase());
     }
 
     public String loging(User user) {
         List<User> list = repository.loging(user);
-        for (User u : list) System.out.println(u);
         if (list.isEmpty())
             throw new UnauthorizedException("Bad credentials");
-        token = new Token().getAuthToken();
-        return token;
+        System.out.println(list.get(0));
+        token = new Token(list.get(0));
+        return token.getAuthToken();
     }
 
     public void checkToken(String authToken) {
-        if (authToken.isEmpty() || !authToken.equals(token))
+        if (authToken.isEmpty() || !authToken.equals(token.getAuthToken()))
             throw new UnauthorizedException("Unauthorized error");
-        System.out.println("token проверен!");
+        System.out.println("token подтвержден!");
     }
 
     @Override
     public void uploadFile(MultipartFile file) {
-//        File convertFiles = new File("C:\\Users\\naste\\Desktop\\New\\" + file.getOriginalFilename());
-        System.out.println(file.getOriginalFilename());
-        System.out.println(file.getSize());
-        System.out.println(file.getContentType());
 
         if (file.isEmpty())
             throw new InputException("Error input data");
-        repository.uploadFile(file);
+
+        repository.uploadFile(file, token.getUser().getDtbase());
     }
 
     @Override
     public void delFile(String fileName) {
-
+        if (fileName.isEmpty())
+            throw new InputException("Error input data");
+        repository.delFile(fileName, token.getUser().getDtbase());
     }
 
     @Override
-    public Files getFile(String fileName) {
+    public File getFile(String fileName) {
         return null;
     }
 
