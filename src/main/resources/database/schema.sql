@@ -6,9 +6,9 @@ CREATE TABLE IF NOT EXISTS user
     dtbase varchar(255) not null
 );
 
-insert into user (login, password, dtbase) VALUES ('nika@mail.ru', '123', 'nikadb');
-insert into user (login, password, dtbase) VALUES ('max@mail.ru', '456', 'maxdb');
-insert into user (login, password, dtbase) VALUES ('serg@mail.ru', '789', 'sergdb');
+INSERT user (login, password, dtbase) VALUES ('nika@mail.ru', '123', 'nikadb');
+INSERT user (login, password, dtbase) VALUES ('max@mail.ru', '456', 'maxdb');
+INSERT user (login, password, dtbase) VALUES ('serg@mail.ru', '789', 'sergdb');
 
 CREATE TABLE IF NOT EXISTS nikadb
 (

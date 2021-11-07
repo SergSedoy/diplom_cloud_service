@@ -1,5 +1,6 @@
 package ru.netology.diplom_cloud_service.service;
 
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.netology.diplom_cloud_service.exception.InputException;
@@ -8,7 +9,6 @@ import ru.netology.diplom_cloud_service.pojo.Token;
 import ru.netology.diplom_cloud_service.pojo.User;
 import ru.netology.diplom_cloud_service.repository.CloudRepositoryImp;
 
-import java.io.File;
 import java.util.List;
 
 @Service
@@ -23,7 +23,7 @@ public class CloudServiceImpl implements CloudService {
 
     public List<String> getListFile(Integer limit) {
 
-        if (limit <= 0 || limit > 100)
+        if (limit <= 0 || limit > 77)
             throw new InputException("Error input data!");
         return repository.getListFile(limit, token.getUser().getDtbase());
     }
@@ -38,7 +38,7 @@ public class CloudServiceImpl implements CloudService {
     }
 
     public void checkToken(String authToken) {
-        if (authToken.isEmpty() || !authToken.equals(token.getAuthToken()))
+        if (token == null || authToken.isEmpty() || !authToken.equals(token.getAuthToken()))
             throw new UnauthorizedException("Unauthorized error");
         System.out.println("token подтвержден!");
     }
@@ -60,8 +60,8 @@ public class CloudServiceImpl implements CloudService {
     }
 
     @Override
-    public File getFile(String fileName) {
-        return null;
+    public Resource getFile(String fileName) {
+        return repository.getFile(fileName, token.getUser().getDtbase());
     }
 
     @Override
@@ -70,4 +70,8 @@ public class CloudServiceImpl implements CloudService {
     }
 
 
+    public String logout() {
+        token = null;
+        return "Success logout";
+    }
 }

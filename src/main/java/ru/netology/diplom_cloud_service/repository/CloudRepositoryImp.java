@@ -1,21 +1,20 @@
 package ru.netology.diplom_cloud_service.repository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
 import ru.netology.diplom_cloud_service.exception.InputException;
 import ru.netology.diplom_cloud_service.exception.ServerException;
-import ru.netology.diplom_cloud_service.pojo.Files;
-import ru.netology.diplom_cloud_service.pojo.Token;
 import ru.netology.diplom_cloud_service.pojo.User;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.sql.DataSource;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -63,12 +62,10 @@ public class CloudRepositoryImp implements CloudRepository {
             String upload_date = new SimpleDateFormat("dd.M.y k-m").format(new GregorianCalendar().getTime());
 
             File tmpFile = new File("C:\\Users\\naste\\Desktop\\Tmp\\" + upload_date + "_" + file.getOriginalFilename());
-            FileOutputStream out = new FileOutputStream(tmpFile);
-            out.write(file.getBytes());
-            out.close();
+            file.transferTo(tmpFile);
             FileInputStream in = new FileInputStream(tmpFile);
             System.out.println("file save succesful");
-            String sql = "INSERT INTO " + dtBase + " (name, file_type, size, upload_date, content) VALUES (?, ?, ?, ?, ?)";
+            String sql = String.format("INSERT INTO %s (name, file_type, size, upload_date, content) VALUES (?, ?, ?, ?, ?)", dtBase);
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1, name);
             statement.setString(2, file_type);
@@ -90,15 +87,47 @@ public class CloudRepositoryImp implements CloudRepository {
             Statement statement = connection.createStatement();
             String sql = String.format("DELETE FROM %s WHERE name = '%s'", dtBase, fileName);
             if (statement.execute(sql))
-                throw new ServerException("Error delet file");
+                throw new ServerException("Error delete file");
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     @Override
-    public Files getFile(String fileName, String dtBase) {
-        return null;
+    public Resource getFile(String fileName, String dtBase) {
+        File tmpFile = null;
+        Resource resource = null;
+        try (Connection connection = dataSource.getConnection()) {
+            Statement statement = connection.createStatement();
+            String sql = String.format("SELECT * FROM %s WHERE name = '%s'", dtBase, fileName);
+            ResultSet resultSet = statement.executeQuery(sql);
+            if (!resultSet.next()) {
+                throw new InputException("Error input data");
+            }
+            InputStream in = resultSet.getBinaryStream("content");
+            tmpFile = new File("C:\\Users\\naste\\Desktop\\Tmp\\" + "target_" + fileName + "." + resultSet.getString("file_type"));
+            FileOutputStream out = new FileOutputStream(tmpFile);
+            byte[] buffer = new byte[8 * 1024];
+            while (true) {
+                int count = in.read(buffer);
+                if (count < 0) {
+                    break;
+                }
+                out.write(buffer, 0, count);
+            }
+            in.close();
+            out.close();
+
+            Path path = Paths.get(tmpFile.getAbsolutePath());
+            resource = new UrlResource(path.toUri());
+            if (!resource.exists() || !resource.isReadable()) {
+                throw new ServerException("Error download file " + fileName);
+            }
+        } catch (SQLException | IOException e) {
+            e.printStackTrace();
+        }
+        tmpFile.delete();
+        return resource;
     }
 
     @Override
