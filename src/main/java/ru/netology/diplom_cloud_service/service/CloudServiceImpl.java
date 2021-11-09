@@ -21,14 +21,9 @@ public class CloudServiceImpl implements CloudService {
         this.repository = repository;
     }
 
-    public List<String> getListFile(Integer limit) {
-
-        if (limit <= 0 || limit > 77)
-            throw new InputException("Error input data!");
-        return repository.getListFile(limit, token.getUser().getDtbase());
-    }
-
     public String loging(User user) {
+        if (user.getLogin().isEmpty() || user.getPassword().isEmpty())
+            throw new UnauthorizedException("Bad credentials");
         List<User> list = repository.loging(user);
         if (list.isEmpty())
             throw new UnauthorizedException("Bad credentials");
@@ -41,6 +36,11 @@ public class CloudServiceImpl implements CloudService {
         if (token == null || authToken.isEmpty() || !authToken.equals(token.getAuthToken()))
             throw new UnauthorizedException("Unauthorized error");
         System.out.println("token подтвержден!");
+    }
+
+    public String logout() {
+        token = null;
+        return "Success logout";
     }
 
     @Override
@@ -61,17 +61,22 @@ public class CloudServiceImpl implements CloudService {
 
     @Override
     public Resource getFile(String fileName) {
+        if (fileName.isEmpty())
+            throw new InputException("Error input data");
         return repository.getFile(fileName, token.getUser().getDtbase());
     }
 
     @Override
-    public void editFile(String fileName) {
-
+    public void editFile(String oldFileName, String newFileName) {
+        if (oldFileName.isEmpty() | newFileName.isEmpty())
+            throw new InputException("Error input data");
+        repository.editFile(oldFileName, newFileName, token.getUser().getDtbase());
     }
 
+    public List<String> getListFile(Integer limit) {
 
-    public String logout() {
-        token = null;
-        return "Success logout";
+        if (limit <= 0 || limit > 50)
+            throw new InputException("Error input data!");
+        return repository.getListFile(limit, token.getUser().getDtbase());
     }
 }

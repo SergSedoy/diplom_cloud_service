@@ -15,5 +15,5 @@ public interface CloudRepository {
 
     Resource getFile(String fileName, String dtBase);
 
-    void editFile(String fileName, String dtBase);
+    void editFile(String oldFileName, String newFileName, String dtBase);
 }

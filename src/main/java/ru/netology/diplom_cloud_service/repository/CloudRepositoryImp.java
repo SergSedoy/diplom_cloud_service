@@ -30,25 +30,12 @@ public class CloudRepositoryImp implements CloudRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
-    @Override
-    public List<String> getListFile(Integer limit, String dtBase) {
-        int count = 0;
-        List<String> list = new ArrayList<>();
-        try (Connection connection = dataSource.getConnection()) {
-            String sql = "SELECT * FROM " + dtBase;
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(sql);
-            while (resultSet.next()) {
-                System.out.println();
-                if (count < limit) {
-                    list.add(resultSet.getString("id") + ". " + resultSet.getString("name") + " " + resultSet.getString("upload_date") + " " + resultSet.getString("size"));
-                    count++;
-                } else break;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return list;
+    public List<User> loging(User user) {
+
+        return entityManager.createQuery("SELECT s FROM User s WHERE s.password = :password AND s.login = :login", User.class)
+                .setParameter("password", user.getPassword())
+                .setParameter("login", user.getLogin())
+                .getResultList();
     }
 
     @Override
@@ -95,7 +82,6 @@ public class CloudRepositoryImp implements CloudRepository {
 
     @Override
     public Resource getFile(String fileName, String dtBase) {
-        File tmpFile = null;
         Resource resource = null;
         try (Connection connection = dataSource.getConnection()) {
             Statement statement = connection.createStatement();
@@ -105,7 +91,7 @@ public class CloudRepositoryImp implements CloudRepository {
                 throw new InputException("Error input data");
             }
             InputStream in = resultSet.getBinaryStream("content");
-            tmpFile = new File("C:\\Users\\naste\\Desktop\\Tmp\\" + "target_" + fileName + "." + resultSet.getString("file_type"));
+            File tmpFile = new File("C:\\Users\\naste\\Desktop\\Tmp\\" + "target_" + fileName + "." + resultSet.getString("file_type"));
             FileOutputStream out = new FileOutputStream(tmpFile);
             byte[] buffer = new byte[8 * 1024];
             while (true) {
@@ -115,31 +101,51 @@ public class CloudRepositoryImp implements CloudRepository {
                 }
                 out.write(buffer, 0, count);
             }
-            in.close();
             out.close();
-
+            in.close();
             Path path = Paths.get(tmpFile.getAbsolutePath());
             resource = new UrlResource(path.toUri());
             if (!resource.exists() || !resource.isReadable()) {
                 throw new ServerException("Error download file " + fileName);
             }
+
         } catch (SQLException | IOException e) {
-            e.printStackTrace();
+            throw new ServerException("Error upload file");
         }
-        tmpFile.delete();
+
         return resource;
     }
 
     @Override
-    public void editFile(String fileName, String dtBase) {
+    public void editFile(String oldFileName, String newFileName, String dtBase) {
+        try (Connection connection = dataSource.getConnection()) {
+            Statement statement = connection.createStatement();
+            String sql = String.format("UPDATE %s SET name = '%s' WHERE name = '%s'", dtBase, newFileName, oldFileName);
+            statement.execute(sql);
+        } catch (SQLException e) {
+            throw new ServerException("Error upload file");
+        }
 
     }
 
-    public List<User> loging(User user) {
-
-        return entityManager.createQuery("SELECT s FROM User s WHERE s.password = :password AND s.login = :login", User.class)
-                .setParameter("password", user.getPassword())
-                .setParameter("login", user.getLogin())
-                .getResultList();
+    @Override
+    public List<String> getListFile(Integer limit, String dtBase) {
+        int count = 0;
+        List<String> list = new ArrayList<>();
+        try (Connection connection = dataSource.getConnection()) {
+            String sql = "SELECT * FROM " + dtBase;
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(sql);
+            while (resultSet.next()) {
+                System.out.println();
+                if (count < limit) {
+                    list.add(resultSet.getString("id") + ". " + resultSet.getString("name") + " " + resultSet.getString("upload_date") + " " + resultSet.getString("size"));
+                    count++;
+                } else break;
+            }
+        } catch (SQLException e) {
+            throw new ServerException("Error getting file list");
+        }
+        return list;
     }
 }

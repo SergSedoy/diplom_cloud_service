@@ -12,5 +12,5 @@ public interface CloudService {
 
     Resource getFile(String fileName);
 
-    void editFile(String fileName);
+    void editFile(String oldFileName, String newFileName);
 }

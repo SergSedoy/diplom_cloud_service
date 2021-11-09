@@ -2,6 +2,7 @@ package ru.netology.diplom_cloud_service.controller;
 
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,15 +27,18 @@ public class MyController {
 
     @GetMapping("/")
     public ResponseEntity<String> greeting() {
-        return ResponseEntity.status(HttpStatus.OK).body("Hello!");
+        return ResponseEntity.ok("Hello!!!");
     }
 
     @PostMapping("/login")
     public ResponseEntity<Object> loging(@RequestBody User user) {
 //        Properties properties = new Properties();
 //        return ResponseEntity.status(200).header("auth-token", "pass" + (int)(Math.random() * 1000)).build();
-//        return properties.getProperty("qwert");
-        return ResponseEntity.ok().body("{auth-token: '" + cloudServiceImpl.loging(user) + "'}");
+//        return properties.getProperty("max@mail.ru");
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body("\"auth-token\"" + ": " + "\"" + cloudServiceImpl.loging(user) + "\"");
     }
 
     @PostMapping("/logout")
@@ -64,15 +68,17 @@ public class MyController {
     }
 
     @PutMapping("/file")
-    public HttpStatus editFile(@RequestParam("name") String fileName, @RequestHeader("auth-token") String authToken) {
+    public ResponseEntity<String> editFile(@RequestParam("name") String oldFileName, @RequestHeader("auth-token") String authToken, @RequestBody String newFileName) {
         // TODO перезаписать файл
-        return HttpStatus.OK;
+        cloudServiceImpl.checkToken(authToken);
+        cloudServiceImpl.editFile(oldFileName, newFileName);
+        return ResponseEntity.ok("Success upload");
     }
 
     @GetMapping("/list")
     public ResponseEntity<List<String>> getListFile(@RequestParam("limit") Integer limit, @RequestHeader("auth-token") String authToken) {
         cloudServiceImpl.checkToken(authToken);
-        return ResponseEntity.status(HttpStatus.OK).body(cloudServiceImpl.getListFile(limit));
+        return ResponseEntity.status(200).body(cloudServiceImpl.getListFile(limit));
     }
 
     @ExceptionHandler(InputException.class)
@@ -89,6 +95,5 @@ public class MyController {
     public ResponseEntity<String> serverException(ServerException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
 
 }
