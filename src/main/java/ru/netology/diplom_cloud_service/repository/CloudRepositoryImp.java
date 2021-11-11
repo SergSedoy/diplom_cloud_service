@@ -46,7 +46,7 @@ public class CloudRepositoryImp implements CloudRepository {
             String name = nameOrigin.substring(0, nameOrigin.length() - 4);
             String file_type = nameOrigin.substring(nameOrigin.length() - 3);
             long size = file.getSize();
-            String upload_date = new SimpleDateFormat("dd.M.y k-m").format(new GregorianCalendar().getTime());
+            String upload_date = new SimpleDateFormat("dd.M.y k-mm").format(new GregorianCalendar().getTime());
 
             File tmpFile = new File("C:\\Users\\naste\\Desktop\\Tmp\\" + upload_date + "_" + file.getOriginalFilename());
             file.transferTo(tmpFile);
@@ -82,6 +82,11 @@ public class CloudRepositoryImp implements CloudRepository {
 
     @Override
     public Resource getFile(String fileName, String dtBase) {
+        String pathDir = "C:\\Users\\naste\\Desktop\\Tmp\\";
+        for (File file : new File(pathDir).listFiles())
+            if(file.isFile())
+                file.delete();
+
         Resource resource = null;
         try (Connection connection = dataSource.getConnection()) {
             Statement statement = connection.createStatement();
@@ -91,7 +96,7 @@ public class CloudRepositoryImp implements CloudRepository {
                 throw new InputException("Error input data");
             }
             InputStream in = resultSet.getBinaryStream("content");
-            File tmpFile = new File("C:\\Users\\naste\\Desktop\\Tmp\\" + "target_" + fileName + "." + resultSet.getString("file_type"));
+            File tmpFile = new File(pathDir + "target_" + fileName + "." + resultSet.getString("file_type"));
             FileOutputStream out = new FileOutputStream(tmpFile);
             byte[] buffer = new byte[8 * 1024];
             while (true) {
@@ -108,11 +113,9 @@ public class CloudRepositoryImp implements CloudRepository {
             if (!resource.exists() || !resource.isReadable()) {
                 throw new ServerException("Error download file " + fileName);
             }
-
         } catch (SQLException | IOException e) {
             throw new ServerException("Error upload file");
         }
-
         return resource;
     }
 
