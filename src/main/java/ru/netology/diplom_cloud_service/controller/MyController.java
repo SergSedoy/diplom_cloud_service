@@ -69,7 +69,6 @@ public class MyController {
 
     @PutMapping("/file")
     public ResponseEntity<String> editFile(@RequestParam("name") String oldFileName, @RequestHeader("auth-token") String authToken, @RequestBody String newFileName) {
-        // TODO перезаписать файл
         cloudServiceImpl.checkToken(authToken);
         cloudServiceImpl.editFile(oldFileName, newFileName);
         return ResponseEntity.ok("Success upload");
