@@ -2,20 +2,20 @@ package ru.netology.diplom_cloud_service.controller;
 
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.netology.diplom_cloud_service.exception.ServerException;
 import ru.netology.diplom_cloud_service.exception.InputException;
 import ru.netology.diplom_cloud_service.exception.UnauthorizedException;
+import ru.netology.diplom_cloud_service.pojo.CloudFile;
+import ru.netology.diplom_cloud_service.pojo.Token;
 import ru.netology.diplom_cloud_service.pojo.User;
 import ru.netology.diplom_cloud_service.service.CloudServiceImpl;
 
 import java.util.List;
 
 @RestController
-//@RequestMapping("/cloud")
 @CrossOrigin(origins = "http://localhost:8080", allowCredentials = "true")
 public class MyController {
 
@@ -25,20 +25,9 @@ public class MyController {
         this.cloudServiceImpl = cloudServiceImpl;
     }
 
-    @GetMapping("/")
-    public ResponseEntity<String> greeting() {
-        return ResponseEntity.ok("Hello!!!");
-    }
-
     @PostMapping("/login")
-    public ResponseEntity<Object> loging(@RequestBody User user) {
-//        Properties properties = new Properties();
-//        return ResponseEntity.status(200).header("auth-token", "pass" + (int)(Math.random() * 1000)).build();
-//        return properties.getProperty("max@mail.ru");
-        return ResponseEntity
-                .ok()
-                .contentType(MediaType.APPLICATION_JSON)
-                .body("\"auth-token\"" + ": " + "\"" + cloudServiceImpl.loging(user) + "\"");
+    public ResponseEntity<Token> login(@RequestBody User user) {
+        return ResponseEntity.ok(cloudServiceImpl.login(user));
     }
 
     @PostMapping("/logout")
@@ -55,27 +44,28 @@ public class MyController {
     }
 
     @DeleteMapping("/file")
-    public ResponseEntity<String> delFile(@RequestParam("name") String fileName, @RequestHeader("auth-token") String authToken) {
+    public ResponseEntity<String> delFile(@RequestParam("filename") String fileName, @RequestHeader("auth-token") String authToken) {
         cloudServiceImpl.checkToken(authToken);
         cloudServiceImpl.delFile(fileName);
         return new ResponseEntity<>("Success deleted", HttpStatus.OK);
     }
 
     @GetMapping("/file")
-    public ResponseEntity<Resource> getFile(@RequestParam("name") String fileName, @RequestHeader("auth-token") String authToken) {
+    public ResponseEntity<Resource> getFile(@RequestParam("filename") String fileName, @RequestHeader("auth-token") String authToken) {
         cloudServiceImpl.checkToken(authToken);
         return new ResponseEntity<>(cloudServiceImpl.getFile(fileName), HttpStatus.OK);
     }
 
     @PutMapping("/file")
-    public ResponseEntity<String> editFile(@RequestParam("name") String oldFileName, @RequestHeader("auth-token") String authToken, @RequestBody String newFileName) {
+    public ResponseEntity<String> editFile(@RequestParam("filename") String oldFileName, @RequestHeader("auth-token") String authToken, @RequestBody String newFileName) {
+
         cloudServiceImpl.checkToken(authToken);
         cloudServiceImpl.editFile(oldFileName, newFileName);
         return ResponseEntity.ok("Success upload");
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<String>> getListFile(@RequestParam("limit") Integer limit, @RequestHeader("auth-token") String authToken) {
+    public ResponseEntity<List<CloudFile>> getListFile(@RequestParam("limit") Integer limit, @RequestHeader("auth-token") String authToken) {
         cloudServiceImpl.checkToken(authToken);
         return ResponseEntity.status(200).body(cloudServiceImpl.getListFile(limit));
     }

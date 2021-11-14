@@ -2,12 +2,12 @@ package ru.netology.diplom_cloud_service.repository;
 
 import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
-import ru.netology.diplom_cloud_service.pojo.Files;
+import ru.netology.diplom_cloud_service.pojo.CloudFile;
 
 import java.util.List;
 
 public interface CloudRepository {
-    List<String> getListFile(Integer limit, String dtBase);
+    List<CloudFile> getListFile(Integer limit, String dtBase);
 
     void uploadFile(MultipartFile file, String dtBase);
 

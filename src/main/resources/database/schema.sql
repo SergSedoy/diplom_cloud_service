@@ -14,7 +14,6 @@ CREATE TABLE IF NOT EXISTS nikadb
 (
     id          int primary key auto_increment,
     name        varchar(255) not null ,
-    file_type   varchar(255),
     size        int check (size > 0),
     upload_date varchar(50),
     content     longblob not null
@@ -24,7 +23,6 @@ CREATE TABLE IF NOT EXISTS maxdb
 (
     id          int primary key auto_increment,
     name        varchar(255) not null ,
-    file_type   varchar(255),
     size        int check (size > 0),
     upload_date varchar(50),
     content     longblob not null
@@ -34,7 +32,6 @@ CREATE TABLE IF NOT EXISTS sergdb
 (
     id          int primary key auto_increment,
     name        varchar(255) not null ,
-    file_type   varchar(255),
     size        int check (size > 0),
     upload_date varchar(50),
     content     longblob not null

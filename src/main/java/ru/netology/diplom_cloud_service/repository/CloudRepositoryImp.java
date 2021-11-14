@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
 import ru.netology.diplom_cloud_service.exception.InputException;
 import ru.netology.diplom_cloud_service.exception.ServerException;
+import ru.netology.diplom_cloud_service.pojo.CloudFile;
 import ru.netology.diplom_cloud_service.pojo.User;
 
 import javax.persistence.EntityManager;
@@ -41,24 +42,18 @@ public class CloudRepositoryImp implements CloudRepository {
     @Override
     public void uploadFile(MultipartFile file, String dtBase) {
         try (Connection connection = dataSource.getConnection()) {
-            assert file.getOriginalFilename() != null;
-            String nameOrigin = file.getOriginalFilename();
-            String name = nameOrigin.substring(0, nameOrigin.length() - 4);
-            String file_type = nameOrigin.substring(nameOrigin.length() - 3);
-            long size = file.getSize();
             String upload_date = new SimpleDateFormat("dd.M.y k-mm").format(new GregorianCalendar().getTime());
 
             File tmpFile = new File("C:\\Users\\naste\\Desktop\\Tmp\\" + upload_date + "_" + file.getOriginalFilename());
             file.transferTo(tmpFile);
             FileInputStream in = new FileInputStream(tmpFile);
             System.out.println("file save succesful");
-            String sql = String.format("INSERT INTO %s (name, file_type, size, upload_date, content) VALUES (?, ?, ?, ?, ?)", dtBase);
+            String sql = String.format("INSERT INTO %s (name, size, upload_date, content) VALUES (?, ?, ?, ?)", dtBase);
             PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setString(1, name);
-            statement.setString(2, file_type);
-            statement.setLong(3, size);
-            statement.setString(4, upload_date);
-            statement.setBinaryStream(5, in);
+            statement.setString(1, file.getOriginalFilename());
+            statement.setLong(2, file.getSize());
+            statement.setString(3, upload_date);
+            statement.setBinaryStream(4, in);
             statement.execute();
             in.close();
             tmpFile.delete();
@@ -96,7 +91,7 @@ public class CloudRepositoryImp implements CloudRepository {
                 throw new InputException("Error input data");
             }
             InputStream in = resultSet.getBinaryStream("content");
-            File tmpFile = new File(pathDir + "target_" + fileName + "." + resultSet.getString("file_type"));
+            File tmpFile = new File(pathDir + "target_" + fileName);
             FileOutputStream out = new FileOutputStream(tmpFile);
             byte[] buffer = new byte[8 * 1024];
             while (true) {
@@ -132,17 +127,16 @@ public class CloudRepositoryImp implements CloudRepository {
     }
 
     @Override
-    public List<String> getListFile(Integer limit, String dtBase) {
+    public List<CloudFile> getListFile(Integer limit, String dtBase) {
         int count = 0;
-        List<String> list = new ArrayList<>();
+        List<CloudFile> list = new ArrayList<>();
         try (Connection connection = dataSource.getConnection()) {
             String sql = "SELECT * FROM " + dtBase;
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
             while (resultSet.next()) {
-                System.out.println();
                 if (count < limit) {
-                    list.add(resultSet.getString("id") + ". " + resultSet.getString("name") + " " + resultSet.getString("upload_date") + " " + resultSet.getString("size"));
+                    list.add(new CloudFile(resultSet.getString("name"), resultSet.getLong("size")));
                     count++;
                 } else break;
             }

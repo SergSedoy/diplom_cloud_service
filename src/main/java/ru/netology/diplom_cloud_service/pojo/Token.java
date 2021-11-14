@@ -1,17 +1,24 @@
 package ru.netology.diplom_cloud_service.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Token {
-    private final String auth_token;
-    private static int count = 0;
+    @JsonProperty("auth-token")
+    private final String authToken;
+    @JsonIgnore
     private final User user;
+    private static int count = 0;
 
     public Token(User user) {
         this.user = user;
-        this.auth_token = "auth-token #" + ++count;
+        this.authToken = "auth-token #" + ++count;
+        System.out.println("token = " + this.authToken);
+        System.out.println(this.user);
     }
 
     public String getAuthToken() {
-        return auth_token;
+        return authToken;
     }
 
     public User getUser(){

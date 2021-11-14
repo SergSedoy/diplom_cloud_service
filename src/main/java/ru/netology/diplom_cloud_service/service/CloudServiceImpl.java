@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.netology.diplom_cloud_service.exception.InputException;
 import ru.netology.diplom_cloud_service.exception.UnauthorizedException;
+import ru.netology.diplom_cloud_service.pojo.CloudFile;
 import ru.netology.diplom_cloud_service.pojo.Token;
 import ru.netology.diplom_cloud_service.pojo.User;
 import ru.netology.diplom_cloud_service.repository.CloudRepositoryImp;
@@ -21,7 +22,7 @@ public class CloudServiceImpl implements CloudService {
         this.repository = repository;
     }
 
-    public String loging(User user) {
+    public Token login(User user) {
         if (user.getLogin().isEmpty() || user.getPassword().isEmpty())
             throw new UnauthorizedException("Bad credentials");
         List<User> list = repository.loging(user);
@@ -29,11 +30,11 @@ public class CloudServiceImpl implements CloudService {
             throw new UnauthorizedException("Bad credentials");
         System.out.println(list.get(0));
         token = new Token(list.get(0));
-        return token.getAuthToken();
+        return token;
     }
 
     public void checkToken(String authToken) {
-        if (token == null || authToken.isEmpty() || !authToken.equals(token.getAuthToken()))
+        if (token == null || authToken.isEmpty() || !authToken.equals("Bearer " + token.getAuthToken()))
             throw new UnauthorizedException("Unauthorized error");
         System.out.println("token подтвержден!");
     }
@@ -73,9 +74,9 @@ public class CloudServiceImpl implements CloudService {
         repository.editFile(oldFileName, newFileName, token.getUser().getDtbase());
     }
 
-    public List<String> getListFile(Integer limit) {
+    public List<CloudFile> getListFile(Integer limit) {
 
-        if (limit <= 0 || limit > 50)
+        if (limit <= 0 || limit > 20)
             throw new InputException("Error input data!");
         return repository.getListFile(limit, token.getUser().getDtbase());
     }
