@@ -69,7 +69,7 @@ public class CloudRepositoryImp implements CloudRepository {
             Statement statement = connection.createStatement();
             String sql = String.format("DELETE FROM %s WHERE name = '%s'", dtBase, fileName);
             if (statement.execute(sql))
-                throw new ServerException("Error delete file");
+                throw new ServerException("Error delete file", 500);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -88,7 +88,7 @@ public class CloudRepositoryImp implements CloudRepository {
             String sql = String.format("SELECT * FROM %s WHERE name = '%s'", dtBase, fileName);
             ResultSet resultSet = statement.executeQuery(sql);
             if (!resultSet.next()) {
-                throw new InputException("Error input data");
+                throw new InputException("Error input data", 400);
             }
             InputStream in = resultSet.getBinaryStream("content");
             File tmpFile = new File(pathDir + "target_" + fileName);
@@ -106,10 +106,10 @@ public class CloudRepositoryImp implements CloudRepository {
             Path path = Paths.get(tmpFile.getAbsolutePath());
             resource = new UrlResource(path.toUri());
             if (!resource.exists() || !resource.isReadable()) {
-                throw new ServerException("Error download file " + fileName);
+                throw new ServerException("Error download file " + fileName, 500);
             }
         } catch (SQLException | IOException e) {
-            throw new ServerException("Error upload file");
+            throw new ServerException("Error upload file", 500);
         }
         return resource;
     }
@@ -121,7 +121,7 @@ public class CloudRepositoryImp implements CloudRepository {
             String sql = String.format("UPDATE %s SET name = '%s' WHERE name = '%s'", dtBase, newFileName, oldFileName);
             statement.execute(sql);
         } catch (SQLException e) {
-            throw new ServerException("Error upload file");
+            throw new ServerException("Error upload file", 500);
         }
 
     }
@@ -141,7 +141,7 @@ public class CloudRepositoryImp implements CloudRepository {
                 } else break;
             }
         } catch (SQLException e) {
-            throw new ServerException("Error getting file list");
+            throw new ServerException("Error getting file list", 500);
         }
         return list;
     }

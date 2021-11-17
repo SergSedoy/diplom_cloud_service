@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.netology.diplom_cloud_service.exception.ServerException;
 import ru.netology.diplom_cloud_service.exception.InputException;
 import ru.netology.diplom_cloud_service.exception.UnauthorizedException;
+import ru.netology.diplom_cloud_service.pojo.ResponseException;
 import ru.netology.diplom_cloud_service.pojo.CloudFile;
 import ru.netology.diplom_cloud_service.pojo.Token;
 import ru.netology.diplom_cloud_service.pojo.User;
@@ -71,18 +72,21 @@ public class MyController {
     }
 
     @ExceptionHandler(InputException.class)
-    public ResponseEntity<String> inputException(InputException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<ResponseException> inputException(InputException e) {
+        final ResponseException responseException = new ResponseException(e.getMessage(), e.getId());
+        return new ResponseEntity<>(responseException, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<String> unauthorException(UnauthorizedException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<ResponseException> unauthorException(UnauthorizedException e) {
+        final ResponseException responseException = new ResponseException(e.getMessage(), e.getId());
+        return new ResponseEntity<>(responseException, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(ServerException.class)
-    public ResponseEntity<String> serverException(ServerException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<ResponseException> serverException(ServerException e) {
+        final ResponseException responseException = new ResponseException(e.getMessage(), e.getId());
+        return new ResponseEntity<>(responseException, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }

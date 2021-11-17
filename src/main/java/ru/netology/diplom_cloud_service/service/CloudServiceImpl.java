@@ -27,10 +27,10 @@ public class CloudServiceImpl implements CloudService {
 
     public Token login(User user) {
         if (user.getLogin().isEmpty() || user.getPassword().isEmpty())
-            throw new UnauthorizedException("Bad credentials");
+            throw new UnauthorizedException("Bad credentials", 400);
         List<User> list = repository.loging(user);
         if (list.isEmpty())
-            throw new UnauthorizedException("Bad credentials");
+            throw new UnauthorizedException("Bad credentials", 400);
         System.out.println(list.get(0));
         token = new Token(list.get(0));
         return token;
@@ -38,7 +38,7 @@ public class CloudServiceImpl implements CloudService {
 
     public void checkToken(String authToken) {
         if (token == null || authToken.isEmpty() || !authToken.equals("Bearer " + token.getAuthToken()))
-            throw new UnauthorizedException("Unauthorized error");
+            throw new UnauthorizedException("Unauthorized error", 401);
         System.out.println("token подтвержден!");
     }
 
@@ -51,7 +51,7 @@ public class CloudServiceImpl implements CloudService {
     public void uploadFile(MultipartFile file) {
 
         if (file.isEmpty())
-            throw new InputException("Error input data");
+            throw new InputException("Error input data!", 400);
 
         repository.uploadFile(file, token.getUser().getDtbase());
     }
@@ -59,27 +59,27 @@ public class CloudServiceImpl implements CloudService {
     @Override
     public void delFile(String fileName) {
         if (fileName.isEmpty())
-            throw new InputException("Error input data");
+            throw new InputException("Error input data!", 400);
         repository.delFile(fileName, token.getUser().getDtbase());
     }
 
     @Override
     public Resource getFile(String fileName) {
         if (fileName.isEmpty())
-            throw new InputException("Error input data");
+            throw new InputException("Error input data!", 400);
         return repository.getFile(fileName, token.getUser().getDtbase());
     }
 
     @Override
     public void editFile(String oldFileName, String newFileName) {
         if (oldFileName.isEmpty() | newFileName.isEmpty())
-            throw new InputException("Error input data");
+            throw new InputException("Error input data!", 400);
         final ObjectMapper mapper = new ObjectMapper();
         try {
             final JsonNode jsonNode = mapper.readValue(newFileName, JsonNode.class);
             newFileName = jsonNode.get("filename").asText();
         } catch (JsonProcessingException e) {
-            throw new InputException("Error input data");
+            throw new InputException("Error input data!", 400);
         }
         repository.editFile(oldFileName, newFileName, token.getUser().getDtbase());
     }
@@ -87,7 +87,7 @@ public class CloudServiceImpl implements CloudService {
     public List<CloudFile> getListFile(Integer limit) {
 
         if (limit <= 0 || limit > 20)
-            throw new InputException("Error input data!");
+            throw new InputException("Error input data!", 400);
         return repository.getListFile(limit, token.getUser().getDtbase());
     }
 }

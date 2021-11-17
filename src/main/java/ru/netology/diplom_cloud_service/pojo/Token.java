@@ -13,8 +13,6 @@ public class Token {
     public Token(User user) {
         this.user = user;
         this.authToken = "auth-token #" + ++count;
-        System.out.println("token = " + this.authToken);
-        System.out.println(this.user);
     }
 
     public String getAuthToken() {
