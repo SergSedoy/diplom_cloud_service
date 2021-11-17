@@ -1,5 +1,8 @@
 package ru.netology.diplom_cloud_service.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -71,6 +74,13 @@ public class CloudServiceImpl implements CloudService {
     public void editFile(String oldFileName, String newFileName) {
         if (oldFileName.isEmpty() | newFileName.isEmpty())
             throw new InputException("Error input data");
+        final ObjectMapper mapper = new ObjectMapper();
+        try {
+            final JsonNode jsonNode = mapper.readValue(newFileName, JsonNode.class);
+            newFileName = jsonNode.get("filename").asText();
+        } catch (JsonProcessingException e) {
+            throw new InputException("Error input data");
+        }
         repository.editFile(oldFileName, newFileName, token.getUser().getDtbase());
     }
 
