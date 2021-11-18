@@ -22,4 +22,12 @@ public class Token {
     public User getUser(){
         return user;
     }
+
+    @Override
+    public String toString() {
+        return "Token{" +
+                "authToken='" + authToken + '\'' +
+                ", user=" + user +
+                '}';
+    }
 }

@@ -26,9 +26,9 @@ public class CloudServiceImpl implements CloudService {
     }
 
     public Token login(User user) {
-        if (user.getLogin().isEmpty() || user.getPassword().isEmpty())
+        if (user == null || user.getLogin().isEmpty() || user.getPassword().isEmpty())
             throw new UnauthorizedException("Bad credentials", 400);
-        List<User> list = repository.loging(user);
+        List<User> list = repository.login(user);
         if (list.isEmpty())
             throw new UnauthorizedException("Bad credentials", 400);
         System.out.println(list.get(0));
@@ -50,7 +50,7 @@ public class CloudServiceImpl implements CloudService {
     @Override
     public void uploadFile(MultipartFile file) {
 
-        if (file.isEmpty())
+        if (file == null || file.isEmpty())
             throw new InputException("Error input data!", 400);
 
         repository.uploadFile(file, token.getUser().getDtbase());
@@ -58,7 +58,7 @@ public class CloudServiceImpl implements CloudService {
 
     @Override
     public void delFile(String fileName) {
-        if (fileName.isEmpty())
+        if (fileName == null || fileName.isEmpty())
             throw new InputException("Error input data!", 400);
         repository.delFile(fileName, token.getUser().getDtbase());
     }

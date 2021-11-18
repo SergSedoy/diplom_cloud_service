@@ -31,7 +31,7 @@ public class CloudRepositoryImp implements CloudRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public List<User> loging(User user) {
+    public List<User> login(User user) {
 
         return entityManager.createQuery("SELECT s FROM User s WHERE s.password = :password AND s.login = :login", User.class)
                 .setParameter("password", user.getPassword())
