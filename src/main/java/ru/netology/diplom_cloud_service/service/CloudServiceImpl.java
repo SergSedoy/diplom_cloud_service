@@ -65,14 +65,14 @@ public class CloudServiceImpl implements CloudService {
 
     @Override
     public Resource getFile(String fileName) {
-        if (fileName.isEmpty())
+        if (fileName == null || fileName.isEmpty())
             throw new InputException("Error input data!", 400);
         return repository.getFile(fileName, token.getUser().getDtbase());
     }
 
     @Override
     public void editFile(String oldFileName, String newFileName) {
-        if (oldFileName.isEmpty() | newFileName.isEmpty())
+        if (oldFileName == null || newFileName == null || oldFileName.isEmpty() || newFileName.isEmpty())
             throw new InputException("Error input data!", 400);
         final ObjectMapper mapper = new ObjectMapper();
         try {
