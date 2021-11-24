@@ -36,7 +36,7 @@ class CloudServiceImplTest {
 
     @Test
     void login() {
-        User user = new User("serg@mail.ru", "456", "maxdb");
+        User user = new User("serg@mail.ru", "456", "Max","maxdb");
         List<User> list = Collections.singletonList(user);
 
         Mockito.when(repository.login(user)).thenReturn(list);
@@ -54,7 +54,7 @@ class CloudServiceImplTest {
 
     @Test
     void loginTestWhenUserFieldIsEmpty() {
-        User user = new User("", "", "");
+        User user = new User("", "", "", "");
         UnauthorizedException exception = assertThrows(UnauthorizedException.class, () -> cloudServiceImpl.login(user));
         assertTrue(exception.getMessage().contains("Bad credentials"));
     }
@@ -89,7 +89,7 @@ class CloudServiceImplTest {
     @Test
     void getFile() {
         String fileName = "test.txt";
-        User user = new User("serg@mail.ru", "456", "maxdb");
+        User user = new User("serg@mail.ru", "456", "Max","maxdb");
         List<User> list = Collections.singletonList(user);
         Resource resource = new UrlResource(getClass().getClassLoader().getResource("test.txt"));
         Mockito.when(repository.login(user)).thenReturn(list);
@@ -118,7 +118,7 @@ class CloudServiceImplTest {
 
     @Test
     void getListFile() {
-        User user = new User("serg@mail.ru", "456", "maxdb");
+        User user = new User("serg@mail.ru", "456", "Max", "maxdb");
         List<User> list = Collections.singletonList(user);
         Integer limit = 5;
         List<CloudFile> expectedList = new ArrayList<>();

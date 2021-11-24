@@ -1,23 +1,25 @@
 package ru.netology.diplom_cloud_service.pojo;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
 public class User {
     @Id
+//    @GeneratedValue
     private long id;
     private String login;
     private String password;
+    private String name;
     private String dtbase;
 
     public User(){
     }
 
-    public User(String login, String password, String dtbase) {
+    public User(String login, String password, String name, String dtbase) {
         this.login = login;
         this.password = password;
+        this.name = name;
         this.dtbase = dtbase;
     }
 
@@ -35,6 +37,14 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDtbase() {
@@ -65,6 +75,7 @@ public class User {
                 "id=" + id +
                 ", login='" + login + '\'' +
                 ", password='" + password + '\'' +
+                ", name='" + name + '\'' +
                 ", dtbase='" + dtbase + '\'' +
                 '}';
     }

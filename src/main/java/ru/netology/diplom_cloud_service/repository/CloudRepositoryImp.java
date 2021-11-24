@@ -1,5 +1,7 @@
 package ru.netology.diplom_cloud_service.repository;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -10,8 +12,6 @@ import ru.netology.diplom_cloud_service.exception.ServerException;
 import ru.netology.diplom_cloud_service.pojo.CloudFile;
 import ru.netology.diplom_cloud_service.pojo.User;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.sql.DataSource;
 import java.io.*;
 import java.nio.file.Path;
@@ -24,19 +24,25 @@ import java.util.List;
 
 @Repository
 public class CloudRepositoryImp implements CloudRepository {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CloudRepositoryImp.class);
 
     @Autowired
     private DataSource dataSource;
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
-    public List<User> login(User user) {
-
-        return entityManager.createQuery("SELECT s FROM User s WHERE s.password = :password AND s.login = :login", User.class)
-                .setParameter("password", user.getPassword())
-                .setParameter("login", user.getLogin())
-                .getResultList();
+    public User login(User user) {
+        User userAuth = null;
+        try (Connection connection = dataSource.getConnection()){
+            Statement statement = connection.createStatement();
+            String sql = String.format("SELECT * FROM user WHERE login = '%s'", user.getLogin());
+            ResultSet resultSet = statement.executeQuery(sql);
+            if (!resultSet.next()) {
+                throw new InputException("Error input data", 400);
+            }
+            userAuth = new User(resultSet.getString("login"), resultSet.getString("password"), resultSet.getString("name"), resultSet.getString("dtbase"));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return userAuth;
     }
 
     @Override
@@ -47,7 +53,7 @@ public class CloudRepositoryImp implements CloudRepository {
             File tmpFile = new File("C:\\Users\\naste\\Desktop\\Tmp\\" + upload_date + "_" + file.getOriginalFilename());
             file.transferTo(tmpFile);
             FileInputStream in = new FileInputStream(tmpFile);
-            System.out.println("file save succesful");
+            LOGGER.info("file save successful!");
             String sql = String.format("INSERT INTO %s (name, size, upload_date, content) VALUES (?, ?, ?, ?)", dtBase);
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1, file.getOriginalFilename());

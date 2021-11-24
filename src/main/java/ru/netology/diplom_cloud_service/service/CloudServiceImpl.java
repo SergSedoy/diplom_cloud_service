@@ -1,8 +1,7 @@
 package ru.netology.diplom_cloud_service.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,6 +16,7 @@ import java.util.List;
 
 @Service
 public class CloudServiceImpl implements CloudService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CloudServiceImpl.class);
     private final CloudRepositoryImp repository;
     private Token token;
 
@@ -28,18 +28,18 @@ public class CloudServiceImpl implements CloudService {
     public Token login(User user) {
         if (user == null || user.getLogin().isEmpty() || user.getPassword().isEmpty())
             throw new UnauthorizedException("Bad credentials", 400);
-        List<User> list = repository.login(user);
-        if (list.isEmpty())
+        User userAuth  = repository.login(user);
+        if (userAuth == null)
             throw new UnauthorizedException("Bad credentials", 400);
-        System.out.println(list.get(0));
-        token = new Token(list.get(0));
+        System.out.println(userAuth);
+        token = new Token(userAuth);
         return token;
     }
 
     public void checkToken(String authToken) {
         if (token == null || authToken.isEmpty() || !authToken.equals("Bearer " + token.getAuthToken()))
             throw new UnauthorizedException("Unauthorized error", 401);
-        System.out.println("token подтвержден!");
+        LOGGER.info("token подтвержден!");
     }
 
     public String logout() {
@@ -74,13 +74,6 @@ public class CloudServiceImpl implements CloudService {
     public void editFile(String oldFileName, String newFileName) {
         if (oldFileName == null || newFileName == null || oldFileName.isEmpty() || newFileName.isEmpty())
             throw new InputException("Error input data!", 400);
-        final ObjectMapper mapper = new ObjectMapper();
-        try {
-            final JsonNode jsonNode = mapper.readValue(newFileName, JsonNode.class);
-            newFileName = jsonNode.get("filename").asText();
-        } catch (JsonProcessingException e) {
-            throw new InputException("Error input data!", 400);
-        }
         repository.editFile(oldFileName, newFileName, token.getUser().getDtbase());
     }
 

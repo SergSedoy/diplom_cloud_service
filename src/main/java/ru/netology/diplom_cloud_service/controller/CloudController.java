@@ -10,31 +10,18 @@ import ru.netology.diplom_cloud_service.exception.InputException;
 import ru.netology.diplom_cloud_service.exception.UnauthorizedException;
 import ru.netology.diplom_cloud_service.pojo.ResponseException;
 import ru.netology.diplom_cloud_service.pojo.CloudFile;
-import ru.netology.diplom_cloud_service.pojo.Token;
-import ru.netology.diplom_cloud_service.pojo.User;
 import ru.netology.diplom_cloud_service.service.CloudServiceImpl;
 
 import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:8080", allowCredentials = "true")
-public class MyController {
+public class CloudController {
 
     private final CloudServiceImpl cloudServiceImpl;
 
-    public MyController(CloudServiceImpl cloudServiceImpl) {
+    public CloudController(CloudServiceImpl cloudServiceImpl) {
         this.cloudServiceImpl = cloudServiceImpl;
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<Token> login(@RequestBody User user) {
-        return ResponseEntity.ok(cloudServiceImpl.login(user));
-    }
-
-    @PostMapping("/logout")
-    public ResponseEntity<String> logout(@RequestHeader("auth-token") String authToken) {
-        cloudServiceImpl.checkToken(authToken);
-        return new ResponseEntity<>(cloudServiceImpl.logout(), HttpStatus.OK);
     }
 
     @PostMapping("/file")
@@ -58,10 +45,10 @@ public class MyController {
     }
 
     @PutMapping("/file")
-    public ResponseEntity<String> editFile(@RequestParam("filename") String oldFileName, @RequestHeader("auth-token") String authToken, @RequestBody String newFileName) {
+    public ResponseEntity<String> editFile(@RequestParam("filename") String oldFileName, @RequestHeader("auth-token") String authToken, @RequestBody CloudFile forNewName) {
 
         cloudServiceImpl.checkToken(authToken);
-        cloudServiceImpl.editFile(oldFileName, newFileName);
+        cloudServiceImpl.editFile(oldFileName, forNewName.getFileName());
         return ResponseEntity.ok("Success upload");
     }
 

@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class MyControllerTest {
+class CloudControllerTest {
 
     MockMvc mockMvc;
     ObjectMapper objectMapper;
@@ -34,14 +34,14 @@ class MyControllerTest {
     @BeforeEach
     void setUp() {
         cloudService = mock(CloudServiceImpl.class);
-        mockMvc = MockMvcBuilders.standaloneSetup(new MyController(cloudService)).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(new CloudController(cloudService)).build();
         objectMapper  = new ObjectMapper();
     }
 
     @Test
     void login() throws Exception {
         String body = "{\"login\": \"max@mail.ru\", \"password\": \"456\"}";
-        User user = new User("max@mail.ru", "456", "dtmax");
+        User user = new User("max@mail.ru", "456", "Max", "dtmax");
         mockMvc.perform(post("/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(user)))
