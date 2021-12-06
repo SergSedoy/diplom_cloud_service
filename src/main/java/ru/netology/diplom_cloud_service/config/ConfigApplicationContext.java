@@ -14,12 +14,4 @@ public class ConfigApplicationContext implements WebMvcConfigurer{
         commonsMultipartResolver.setMaxUploadSize(500000);
         return commonsMultipartResolver;
     }
-//
-//    @Bean
-//    public FilterRegistrationBean multipartFilterRegistrationBean() {
-//        final MultipartFilter multipartFilter = new MultipartFilter();
-//        final FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean(multipartFilter);
-//        filterRegistrationBean.addInitParameter("multipartResolverBeanName", "commonsMultipartResolver");
-//        return filterRegistrationBean;
-//    }
 }

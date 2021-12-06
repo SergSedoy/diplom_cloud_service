@@ -15,7 +15,6 @@ import ru.netology.diplom_cloud_service.service.CloudServiceImpl;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:8080", allowCredentials = "true")
 public class CloudController {
 
     private final CloudServiceImpl cloudServiceImpl;

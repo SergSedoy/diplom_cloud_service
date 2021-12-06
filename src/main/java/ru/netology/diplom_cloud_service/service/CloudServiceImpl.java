@@ -31,7 +31,7 @@ public class CloudServiceImpl implements CloudService {
         User userAuth  = repository.login(user);
         if (userAuth == null)
             throw new UnauthorizedException("Bad credentials", 400);
-        System.out.println(userAuth);
+        LOGGER.info("достали из БД юзера {} для генерирования токена!", userAuth);
         token = new Token(userAuth);
         return token;
     }
