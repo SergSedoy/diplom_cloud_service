@@ -39,23 +39,6 @@ class CloudControllerTest {
     }
 
     @Test
-    void login() throws Exception {
-        String body = "{\"login\": \"max@mail.ru\", \"password\": \"456\"}";
-        User user = new User("max@mail.ru", "456", "Max", "dtmax");
-        mockMvc.perform(post("/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(user)))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void logout() throws Exception {
-        mockMvc.perform(post("/logout")
-                .header("auth-token", "Bearer auth-token #1"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
     void delFile() throws Exception {
         mockMvc.perform(delete("/file")
                 .param("filename", "test.txt")

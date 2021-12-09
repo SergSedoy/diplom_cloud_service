@@ -24,16 +24,19 @@ import java.util.List;
 
 @Repository
 public class CloudRepositoryImp implements CloudRepository {
-    private static final Logger LOGGER = LoggerFactory.getLogger(CloudRepositoryImp.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CloudRepositoryImp.class);
+    private final DataSource dataSource;
 
     @Autowired
-    private DataSource dataSource;
+    public CloudRepositoryImp(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
 
-    public User login(User user) {
+    public User login(String login) {
         User userAuth = null;
         try (Connection connection = dataSource.getConnection()){
             Statement statement = connection.createStatement();
-            String sql = String.format("SELECT * FROM user WHERE login = '%s'", user.getLogin());
+            String sql = String.format("SELECT * FROM user WHERE login = '%s'", login);
             ResultSet resultSet = statement.executeQuery(sql);
             if (!resultSet.next()) {
                 throw new InputException("Error input data", 400);
@@ -47,13 +50,14 @@ public class CloudRepositoryImp implements CloudRepository {
 
     @Override
     public void uploadFile(MultipartFile file, String dtBase) {
+
         try (Connection connection = dataSource.getConnection()) {
             String upload_date = new SimpleDateFormat("dd.M.y k-mm").format(new GregorianCalendar().getTime());
 
             File tmpFile = new File("C:\\Users\\naste\\Desktop\\Tmp\\" + upload_date + "_" + file.getOriginalFilename());
             file.transferTo(tmpFile);
             FileInputStream in = new FileInputStream(tmpFile);
-            LOGGER.info("file save successful!");
+            LOG.info("file save successful!");
             String sql = String.format("INSERT INTO %s (name, size, upload_date, content) VALUES (?, ?, ?, ?)", dtBase);
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1, file.getOriginalFilename());
@@ -151,4 +155,6 @@ public class CloudRepositoryImp implements CloudRepository {
         }
         return list;
     }
+
+
 }

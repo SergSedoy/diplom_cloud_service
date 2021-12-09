@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS user
     name     varchar(255),
     dtbase   varchar(255) not null
 );
-
+DELETE FROM user;
 INSERT INTO user (login, password, name, dtbase) VALUES ('nika@mail.ru', '123', 'Nika','nikadb');
 INSERT INTO user (login, password, name, dtbase) VALUES ('max@mail.ru', '456', 'Max', 'maxdb');
 INSERT INTO user (login, password, name, dtbase) VALUES ('serg@mail.ru', '789', 'Serg','sergdb');
