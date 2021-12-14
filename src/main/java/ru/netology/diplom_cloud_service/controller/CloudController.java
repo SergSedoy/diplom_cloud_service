@@ -31,28 +31,24 @@ public class CloudController {
 
     @DeleteMapping("/file")
     public ResponseEntity<String> delFile(@RequestParam("filename") String fileName, @RequestHeader("auth-token") String authToken) {
-//        cloudServiceImpl.checkToken(authToken);
         cloudServiceImpl.delFile(fileName);
         return new ResponseEntity<>("Success deleted", HttpStatus.OK);
     }
 
     @GetMapping("/file")
     public ResponseEntity<Resource> getFile(@RequestParam("filename") String fileName, @RequestHeader("auth-token") String authToken) {
-//        cloudServiceImpl.checkToken(authToken);
         return new ResponseEntity<>(cloudServiceImpl.getFile(fileName), HttpStatus.OK);
     }
 
     @PutMapping("/file")
     public ResponseEntity<String> editFile(@RequestParam("filename") String oldFileName, @RequestHeader("auth-token") String authToken, @RequestBody CloudFile forNewName) {
 
-//        cloudServiceImpl.checkToken(authToken);
         cloudServiceImpl.editFile(oldFileName, forNewName.getFileName());
         return ResponseEntity.ok("Success upload");
     }
 
     @GetMapping("/list")
     public ResponseEntity<List<CloudFile>> getListFile(@RequestParam("limit") Integer limit, @RequestHeader("auth-token") String authToken) {
-//        cloudServiceImpl.checkToken(authToken);
         return ResponseEntity.status(200).body(cloudServiceImpl.getListFile(limit));
     }
 
