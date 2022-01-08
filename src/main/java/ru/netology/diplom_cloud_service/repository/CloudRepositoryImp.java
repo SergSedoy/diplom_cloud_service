@@ -52,9 +52,9 @@ public class CloudRepositoryImp implements CloudRepository {
     public void uploadFile(MultipartFile file, String dtBase) {
 
         try (Connection connection = dataSource.getConnection()) {
-            String upload_date = new SimpleDateFormat("dd.M.y k-mm").format(new GregorianCalendar().getTime());
+            String upload_date = new SimpleDateFormat("dd.MM.y k-mm").format(new GregorianCalendar().getTime());
 
-            File tmpFile = new File("C:\\Users\\naste\\Desktop\\Tmp\\" + upload_date + "_" + file.getOriginalFilename());
+            File tmpFile = File.createTempFile(upload_date, file.getOriginalFilename());
             file.transferTo(tmpFile);
             FileInputStream in = new FileInputStream(tmpFile);
             LOG.info("file save successful!");
