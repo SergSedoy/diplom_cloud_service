@@ -10,46 +10,46 @@ import ru.netology.diplom_cloud_service.exception.InputException;
 import ru.netology.diplom_cloud_service.exception.UnauthorizedException;
 import ru.netology.diplom_cloud_service.pojo.ResponseException;
 import ru.netology.diplom_cloud_service.pojo.CloudFile;
-import ru.netology.diplom_cloud_service.service.CloudServiceImpl;
+import ru.netology.diplom_cloud_service.service.CloudService;
 
 import java.util.List;
 
 @RestController
 public class CloudController {
 
-    private final CloudServiceImpl cloudServiceImpl;
+    private final CloudService service;
 
-    public CloudController(CloudServiceImpl cloudServiceImpl) {
-        this.cloudServiceImpl = cloudServiceImpl;
+    public CloudController(CloudService cloudServiceImpl) {
+        this.service = cloudServiceImpl;
     }
 
     @PostMapping("/file")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file, @RequestHeader("auth-token") String authToken) {
-        cloudServiceImpl.uploadFile(file);
+        service.uploadFile(file);
         return new ResponseEntity<>("Success upload", HttpStatus.OK);
     }
 
     @DeleteMapping("/file")
     public ResponseEntity<String> delFile(@RequestParam("filename") String fileName, @RequestHeader("auth-token") String authToken) {
-        cloudServiceImpl.delFile(fileName);
+        service.delFile(fileName);
         return new ResponseEntity<>("Success deleted", HttpStatus.OK);
     }
 
     @GetMapping("/file")
     public ResponseEntity<Resource> getFile(@RequestParam("filename") String fileName, @RequestHeader("auth-token") String authToken) {
-        return new ResponseEntity<>(cloudServiceImpl.getFile(fileName), HttpStatus.OK);
+        return new ResponseEntity<>(service.getFile(fileName), HttpStatus.OK);
     }
 
     @PutMapping("/file")
     public ResponseEntity<String> editFile(@RequestParam("filename") String oldFileName, @RequestHeader("auth-token") String authToken, @RequestBody CloudFile forNewName) {
 
-        cloudServiceImpl.editFile(oldFileName, forNewName.getFileName());
+        service.editFile(oldFileName, forNewName.getFileName());
         return ResponseEntity.ok("Success upload");
     }
 
     @GetMapping("/list")
     public ResponseEntity<List<CloudFile>> getListFile(@RequestParam("limit") Integer limit, @RequestHeader("auth-token") String authToken) {
-        return ResponseEntity.status(200).body(cloudServiceImpl.getListFile(limit));
+        return ResponseEntity.status(200).body(service.getListFile(limit));
     }
 
     @ExceptionHandler(InputException.class)

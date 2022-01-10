@@ -13,7 +13,7 @@ import ru.netology.diplom_cloud_service.exception.InputException;
 import ru.netology.diplom_cloud_service.exception.UnauthorizedException;
 import ru.netology.diplom_cloud_service.pojo.CloudFile;
 import ru.netology.diplom_cloud_service.pojo.User;
-import ru.netology.diplom_cloud_service.repository.CloudRepositoryImp;
+import ru.netology.diplom_cloud_service.repository.CloudRepository;
 import ru.netology.diplom_cloud_service.repository.UserRepository;
 import ru.netology.diplom_cloud_service.security.JwtProvider;
 
@@ -25,12 +25,12 @@ import java.util.Map;
 public class CloudServiceImpl implements CloudService {
 
     private static final Logger LOG = LoggerFactory.getLogger(CloudServiceImpl.class);
-    private final CloudRepositoryImp repository;
+    private final CloudRepository repository;
     private final UserRepository userRepository;
     private final JwtProvider jwtProvider;
 
 
-    public CloudServiceImpl(CloudRepositoryImp repository, UserRepository userRepository, JwtProvider jwtProvider) {
+    public CloudServiceImpl(CloudRepository repository, UserRepository userRepository, JwtProvider jwtProvider) {
         this.repository = repository;
         this.userRepository = userRepository;
         this.jwtProvider = jwtProvider;

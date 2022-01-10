@@ -32,6 +32,7 @@ public class CloudRepositoryImp implements CloudRepository {
         this.dataSource = dataSource;
     }
 
+    @Override
     public User login(String login) {
         User userAuth = null;
         try (Connection connection = dataSource.getConnection()){
