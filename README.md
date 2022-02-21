@@ -26,5 +26,6 @@ REST интерфейс предоставляет возможность заг
 |'docker build -t transferservice .'|*создаём Docker-образ*
 |'docker run -p 5500:5500 -d transferservice'|*запускаем Docker-образ*|
 |'docker stop $(docker ps -aq)'|*$(docker ps -aq) - выводим список id контейнеров*|
+|'docker rmi -f $(docker images -aq)'|*to delete all the images*|
 |'docker rm $(docker ps -aq)'|*удалить все контейнеры*|
 |'docker-compose up'|*запуск через docker-compose.yml*
